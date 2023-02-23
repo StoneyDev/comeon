@@ -1,3 +1,4 @@
+import 'package:comeon/view/record_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
@@ -10,9 +11,12 @@ class HomePage extends StatelessWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: ElevatedButton(
         child: const Icon(Icons.mic_rounded),
-        onPressed: () {
-          
-        },
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const RecordPage(),
+          ),
+        ),
       ),
     );
   }
