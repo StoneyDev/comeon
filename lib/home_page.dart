@@ -1,4 +1,4 @@
-import 'package:comeon/view/record_page.dart';
+import 'package:comeon/recorder/recorder_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
@@ -14,7 +14,7 @@ class HomePage extends StatelessWidget {
         onPressed: () => Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const RecordPage(),
+            builder: (context) => const RecorderPage(),
           ),
         ),
       ),
