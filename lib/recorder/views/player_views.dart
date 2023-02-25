@@ -42,6 +42,15 @@ class PlayerViews extends StatelessWidget {
                 ? () {
                     timerRead.resetTimer();
                     playerRead.stopRecording();
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("L'enregistrement a bien été enregistré"),
+                      ),
+                    );
+
+                    // Refresh
+                    Navigator.pop(context, true);
                   }
                 : null,
             child: const Icon(Icons.stop_rounded),

@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
 
 class RecordViewModel extends ChangeNotifier {
@@ -13,40 +17,41 @@ class RecordViewModel extends ChangeNotifier {
 
   /// Launch record
   void startRecording() async {
-    try {
-      if (await _record.hasPermission()) {
-        // Start recording
-        await _record.start();
+    if (await Permission.storage.request().isGranted && await _record.hasPermission()) {
+      final Directory docPath = await getApplicationDocumentsDirectory();
+      final String recordsStoragePath = '${docPath.path}/records';
 
-        _isRecording = await _record.isRecording();
-        _isPausing = !_isRecording;
-
-        notifyListeners();
+      if (!Directory(recordsStoragePath).existsSync()) {
+        Directory(recordsStoragePath).createSync();
       }
-    } catch (e) {}
+
+      // Start recording
+      await _record.start(path: '$recordsStoragePath/${DateTime.now().millisecondsSinceEpoch}.m4a');
+
+      _isRecording = await _record.isRecording();
+      _isPausing = !_isRecording;
+
+      notifyListeners();
+    }
   }
 
   /// Stop recording
   void stopRecording() async {
-    try {
-      await _record.stop();
+    await _record.stop();
 
-      _isRecording = false;
-      _isPausing = false;
+    _isRecording = false;
+    _isPausing = false;
 
-      notifyListeners();
-    } catch (e) {}
+    notifyListeners();
   }
 
   /// Pause recording
   void pauseRecording() async {
-    try {
-      await _record.pause();
+    await _record.pause();
 
-      _isPausing = await _record.isPaused();
-      _isRecording = !_isPausing;
+    _isPausing = await _record.isPaused();
+    _isRecording = !_isPausing;
 
-      notifyListeners();
-    } catch (e) {}
+    notifyListeners();
   }
 }
