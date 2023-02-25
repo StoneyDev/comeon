@@ -1,4 +1,4 @@
-import 'package:comeon/view_model/record__view_model.dart';
+import 'package:comeon/view_model/record_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
