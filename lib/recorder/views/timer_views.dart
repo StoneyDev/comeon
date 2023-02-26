@@ -10,6 +10,7 @@ class TimerViews extends StatelessWidget {
     final timerWatch = context.watch<TimerViewModel>();
 
     return Text(
+      key: const Key('timer'),
       '${timerWatch.hours}:${timerWatch.minutes}:${timerWatch.seconds}',
       style: Theme.of(context).textTheme.displayLarge,
     );

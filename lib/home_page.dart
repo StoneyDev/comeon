@@ -31,13 +31,14 @@ class HomePage extends StatelessWidget {
                       ),
                     )
                   else
-                    const Text('Aucun enregistrement')
+                    const Center(child: Text('Aucun enregistrement'))
                 ],
               ),
             ),
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
           floatingActionButton: ElevatedButton(
+            key: const Key('mic'),
             child: const Icon(Icons.mic_rounded),
             onPressed: () async {
               final bool? recordingCreated = await Navigator.push(

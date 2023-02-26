@@ -20,6 +20,7 @@ class PlayerViews extends StatelessWidget {
         // Start or pause the recording
         Expanded(
           child: ElevatedButton(
+            key: const Key('startRecording'),
             onPressed: () {
               if (playerWatch.isRecording) {
                 timerRead.pauseTimer();
@@ -38,6 +39,7 @@ class PlayerViews extends StatelessWidget {
         // Stop and save recording
         Expanded(
           child: ElevatedButton(
+            key: const Key('stopRecording'),
             onPressed: playerWatch.isRecording || playerWatch.isPausing
                 ? () {
                     timerRead.resetTimer();
