@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:io';
 
 import 'package:comeon/models/recording.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
@@ -14,7 +15,17 @@ class HomeViewModel extends ChangeNotifier {
   UnmodifiableListView<Recording> get recordings => UnmodifiableListView(_recordings);
 
   Future<Directory?> getPath() async {
-    if (await Permission.storage.request().isGranted) {
+    final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+    AndroidDeviceInfo? androidDeviceInfo;
+
+    if (Platform.isAndroid) {
+      androidDeviceInfo = await deviceInfoPlugin.androidInfo;
+    }
+
+    final bool storagePermission =
+        (await Permission.storage.request().isGranted || (androidDeviceInfo?.version.sdkInt ?? 0) >= 33);
+
+    if (storagePermission) {
       final Directory docPath = await getApplicationDocumentsDirectory();
 
       return Directory.fromUri(Uri(path: '${docPath.path}/records'));
@@ -27,11 +38,15 @@ class HomeViewModel extends ChangeNotifier {
   void getRecordings() async {
     try {
       _recordings = [];
-      
+
       final AudioPlayer audio = AudioPlayer();
       final Directory? recordingsPath = await getPath();
 
       if (recordingsPath != null) {
+        if (!Directory(recordingsPath.path).existsSync()) {
+          Directory(recordingsPath.path).createSync();
+        }
+
         final List<FileSystemEntity> storageFiles = recordingsPath.listSync();
 
         for (final FileSystemEntity file in storageFiles) {

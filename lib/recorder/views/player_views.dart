@@ -21,13 +21,13 @@ class PlayerViews extends StatelessWidget {
         Expanded(
           child: ElevatedButton(
             key: const Key('startRecording'),
-            onPressed: () {
+            onPressed: () async {
               if (playerWatch.isRecording) {
                 timerRead.pauseTimer();
                 playerRead.pauseRecording();
               } else {
+                await playerRead.startRecording();
                 timerRead.startTimer();
-                playerRead.startRecording();
               }
             },
             child: Icon(playerWatch.isRecording ? Icons.pause_rounded : Icons.play_arrow_rounded),
