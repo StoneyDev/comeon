@@ -18,28 +18,35 @@ class RecordViewModel extends ChangeNotifier {
 
   /// Launch record
   Future<void> startRecording() async {
-    final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
-    AndroidDeviceInfo? androidDeviceInfo;
+    if (_isPausing) {
+      await _record.resume();
 
-    if (Platform.isAndroid) {
-      androidDeviceInfo = await deviceInfoPlugin.androidInfo;
+      _isRecording = true;
+      _isPausing = false;
+    } else {
+      final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+      AndroidDeviceInfo? androidDeviceInfo;
+
+      if (Platform.isAndroid) {
+        androidDeviceInfo = await deviceInfoPlugin.androidInfo;
+      }
+
+      final bool storagePermission =
+          (await Permission.storage.request().isGranted || (androidDeviceInfo?.version.sdkInt ?? 0) >= 33);
+
+      if (storagePermission && await _record.hasPermission()) {
+        final Directory docPath = await getApplicationDocumentsDirectory();
+        final String recordsStoragePath = '${docPath.path}/records';
+
+        // Start recording
+        await _record.start(path: '$recordsStoragePath/${DateTime.now().millisecondsSinceEpoch}.m4a');
+
+        _isRecording = await _record.isRecording();
+        _isPausing = !_isRecording;
+      }
     }
 
-    final bool storagePermission =
-        (await Permission.storage.request().isGranted || (androidDeviceInfo?.version.sdkInt ?? 0) >= 33);
-
-    if (storagePermission && await _record.hasPermission()) {
-      final Directory docPath = await getApplicationDocumentsDirectory();
-      final String recordsStoragePath = '${docPath.path}/records';
-
-      // Start recording
-      await _record.start(path: '$recordsStoragePath/${DateTime.now().millisecondsSinceEpoch}.m4a');
-
-      _isRecording = await _record.isRecording();
-      _isPausing = !_isRecording;
-
-      notifyListeners();
-    }
+    notifyListeners();
   }
 
   /// Stop recording
